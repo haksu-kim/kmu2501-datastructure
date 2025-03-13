@@ -1,15 +1,13 @@
 #include <stdio.h>
 
 void ShowBits(int count, unsigned int num, int start_bit,int end_bit) {
-    int show_bit_count = end_bit - start_bit + 1;
-     num = (num << start_bit);
-    num = num >> (count - show_bit_count);
+    int show_bit_count = end_bit - start_bit;
+    num = (num >> start_bit);
 
     int bit_index = show_bit_count - 1;
 
-    for(int k=0; k<show_bit_count; k++) {
-        printf("%d", (num & (1 << bit_index)) >> bit_index);
-        bit_index--;
+    for(int k=show_bit_count; k>=0; k--) {
+        printf("%d", (num >> k)&1);
     }//for
     printf("\n");
 }
@@ -22,13 +20,11 @@ int main() {
     int *p = (int *)&i;
 
     printf("부호 (1비트) : ");
-    ShowBits(1, *p, 0, 0);
+    ShowBits(1, *p, 31, 31);
     printf("지수 (8비트) : ");
-    ShowBits(8, *p, 1, 8);
+    ShowBits(8, *p, 23, 30);
     printf("지수 (23비트) : ");
-    ShowBits(8, *p, 9, 31);
+    ShowBits(23, *p, 0, 22);
 
     return 0;
 }
-
-// split or 교수님 집어줒신 것
