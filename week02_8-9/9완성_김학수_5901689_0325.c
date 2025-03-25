@@ -1,3 +1,17 @@
+/*
+    두 개 변수 선언
+    print 정수 개수 입력
+    scanf 정수 개수
+    정수 배열 선언
+
+    print 정수 입력
+    for 0부터 정수까지 배열에 저장
+
+    for 0부터 정수까지 오름차순으로 배열 정렬
+    
+    print 정렬된 정수들
+        for 0부터 정수까지
+*/
 #include <stdio.h>
 
 int main() {
@@ -20,7 +34,7 @@ int main() {
                 int temp = arr[q];
                 arr[q] = arr[p];
                 arr[p] = temp;
-            }//후에 더 큰 수가 있다면...
+            }
         }
     }
 
