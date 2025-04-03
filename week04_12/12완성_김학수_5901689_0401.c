@@ -35,6 +35,7 @@ int main() {
     int s;
     int m;
 
+    while(1) {
     printf("피보나치 수열 방법 선택 (1: 재귀적, 2: 순환적, 0: 종료) : \n");
     scanf("%d", &s);
     //scanf("피보나치 수열 방법 선택 (1: 재귀적, 2: 순환적, 0: 종료) : \n");
@@ -48,6 +49,8 @@ int main() {
         printf("F(%d) = %d (순환적 방법)\n", s, fibo_itr(m));
     } else {
         printf("프로그램이 종료되었습니다.");
+        return 1;
+        }
     }
     return m;
 }
