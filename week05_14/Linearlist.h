@@ -23,4 +23,4 @@ extern int printList(listType *list);
 extern int initList(listType *list);
 extern int ordered_insertItem(listType *list, elementType item);
 extern int destroyList(listType* list);
-extern void removeItem(listType *list, int index);
+extern int removeItem(listType *list, int index);

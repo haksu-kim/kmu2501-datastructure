@@ -21,6 +21,8 @@ listType *createList(int size) {
 int destroyList(listType* list) {
     free(list->array);
     free(list);
+    
+    return 0;
 }
 
 //readItem
@@ -34,25 +36,34 @@ elementType readItem(listType *list, int index){
     return list->array[index];
 }
 
-int compare_item(elementType item1, elementType item2) {
-    return (item1.expo - item2.expo);
-}
+int ordered_insertItem(listType *list, elementType item) {
+    int i;
 
-//ordered_insertItem(04/08)
-int ordered_insertItem(listType* list, elementType item) {
-    int i, j;
-    for(i=0; i<=list->last; i++) {
-        if (compare_item(list->array[i], item) > 0) break;
+    // 동일한 차수의 항이 있는지 확인
+    for (i = 0; i <= list->last; i++) {
+        if(list->array[i].expo == item.expo) {
+            list->array[i].coef += item.coef;
+            if(list->array[i].coef == 0) {
+                deleteItem(list, i);
+            }
+            return 0;
+        }
     }
-    for(int j=list->last+1; j>i; j--) {
-        list->array[j] = list->array[j-1];
+
+    for(i = list->last; i>=0 && list->array[i].expo < item.expo; i--) {
+        list->array[i+1] = list->array[i];
         list->move++;
     }
-    list->array[i] = item;
+    list->array[i+1] = item;
     list->last++;
-
-    return 1;
-
+    /*
+    printf("Item: ");
+    for(int j=0; j<=list->last; j++) {
+        printf(" %dx^%d ", list->array[j].coef, list->array[j].expo);
+    }
+    printf("\n");
+*/
+    return 0;
 }
 
 //insertItem
@@ -73,7 +84,22 @@ int insertItem(listType *list, int index, elementType item) {
     }
     list->array[index] = item;
     list->last++;
+    
+    return 0;
 }
+
+int removeItem(listType *list, int index) {
+    if(index<=0 || index>list->last) {
+        fprintf(stderr, "Index erro %d in removeItem\n", index);
+        return -1;
+    }
+    for(int i=index; i<list->last; i++){
+        list->array[i] = list->array[i+1];
+    }
+    list->last--;
+    return 0;
+}
+
 //deleteItem
 elementType deleteItem(listType *list, int index) {
     elementType r = list->array[index];
@@ -92,21 +118,56 @@ elementType deleteItem(listType *list, int index) {
 }
 
 int printList(listType *list) {
-    printf("List: size = %d, last = %d, move = %d\n Items:", list->size, list->last, list->move);
-    for(int i=list->last; i>=0; i--) {
-        printf(" %dX^%d ", i, list->array[i].coef);
-            if (list->array[i].expo != 0) {
-                printf("x^%d", list->array[i].expo);
+    for (int i = 0; i <= list->last; i++) {
+        elementType item = list->array[i];
+/*
+        if(item.coef > 0 && i > 0) {
+            printf("+");
+        } else if(item.coef < 0) {
+            printf("-");
+        }
+  */
+        // 계수 출력
+        /*
+        if (item.coef != 1 && item.coef != -1) {
+            printf("%d", item.coef);
+        } else if(item.coef > 1) {
+            printf("+");
+        } else if(item.coef < 1) {
+            printf("-");
+        }*/
+        if(item.coef >= 1 && i>0) {
+            printf("+%d", item.coef);
+        } else if(item.coef >= 1 && i==0) {
+            printf("%d", item.coef);
+        } else if(item.coef < -1) {
+            printf("%d", item.coef);
+        } else if(item.coef == -1) {
+            printf("-");
+        }
+
+        // 지수 출력
+        if (item.expo > 1) {
+            printf("x^%d", item.expo);
+        } else if (item.expo == 1) {
+            printf("x");
+        } else if (item.expo == 0) {
+            if (item.coef == 1 || item.coef == -1) {
+                printf("");
             }
-            if(i!=0) {
-                printf("+");
-            }
+        }
+
+
+
     }
     printf("\n");
+    return 0;
 }
 
 //initList
 int initList(listType *list) {
     list->last = -1;
     list->move = 0;
+    
+    return 0;
 }

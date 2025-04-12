@@ -2,43 +2,7 @@
 #include<stdlib.h>
 #include"Linearlist.h"
 
-listType *polyadd(listType *f, listType *s) {
-    listType* a;
-    int i, j=0;
-    elementType f_item, s_item;
-    a = createList(f->last + s->last+2);
-
-    while(i<=f->last && i<=s->last) {
-        f_item = readItem(f, i);
-        s_item = readItem(s, j);
-        if(f_item.expo<s_item.expo) {
-            ordered_insertItem(a, f_item);
-            i++;
-        } else if(f_item.expo==s_item.expo) {
-            ordered_insertItem(a, (elementType) {f_item.coef+s_item.coef, f_item.expo});
-            i++; j++;
-        } else {
-            ordered_insertItem(a, s_item);
-            j++;
-        }
-    }
-    while(i<=f->last) {
-        ordered_insertItem(a, readItem(f,i));
-        i++;
-    }
-    while(i<=s->last) {
-        ordered_insertItem(a, readItem(s,j));
-        j++;
-    }
-    return a;
-}
-
-void removeItem(listType *list, int index) {
-    for(int i=index; i<list->last; i++) {
-        list->array[i] = list->array[i+1];
-    }
-    list->last--;
-}// Function to remove an item from the list
+#define MAX 100
 
 listType *polymul(listType *f, listType *s) {
     listType *t;
@@ -49,21 +13,27 @@ listType *polymul(listType *f, listType *s) {
     while(i<=f->last && j<=s->last) {
         f_item = readItem(f, i);
         s_item = readItem(s, j);
-        ordered_insertItem(t, (elementType) {f_item.coef*s_item.coef, f_item.expo});
-        j++;
-        if(j==s->last) {
+        if(s_item.expo == 0 ) {
+            ordered_insertItem(t, (elementType) {f_item.coef*s_item.coef, f_item.expo});
             i++;
             j=0;
+        } else if(f_item.expo == 0) {
+            ordered_insertItem(t, (elementType) {f_item.coef*s_item.coef, s_item.expo});
+            break;
+        } else {
+            ordered_insertItem(t, (elementType) {f_item.coef*s_item.coef, f_item.expo+s_item.expo});
+            j++;
         }
-    }//f의 첫 번째 항을 기준으로 곱셈
 
+        
+    }//f의 첫 번째 항을 기준으로 곱셈
     while(1) {
         t_item = readItem(t, k);
         if(k+1 <= t->last) {
             elementType t_next_item = readItem(t, k+1);
             if(t_item.expo == t_next_item.expo) {
                 t_item.coef += t_next_item.coef;
-            removeItem(t, k+1);
+            deleteItem(t, k+1);
         } else {
             k++;
             }
@@ -74,33 +44,121 @@ listType *polymul(listType *f, listType *s) {
     return t;
 }
 
-main() {
+
+int main(void) {
     listType *poly1, *poly2, *poly3;
-    int coef, expo;
-
-    poly1 = createList(10);
+    int coef=0, expo=0;
+    poly1 = createList(MAX);
+    
+    printf("첫 번째 다항식을 입력하세요 (예: 3x^2+4x+1) :\n");
+    char input1[MAX];
+    scanf("%s", input1);
+    int i=0;
     while(1) {
-        scanf("%d %d", &coef, &expo);
+        int coef_sign = 1;
+        coef=0;
+        expo=0;
+        
+        if(input1[i]=='-') {
+            coef_sign = -1;
+            i++;
+        } else if(input1[i] == '+') {
+            i++;
+        }
+        if(input1[i] >= '0' && input1[i] <= '9') {
+            coef = coef * 10 + (input1[i] - '0');
+            i++;
+        }
+        
+        if(input1[i] == 'x') {
+            i++;
+            if(input1[i] == '^') {
+                i++;
+                if(input1[i] >= '0' && input1[i] <= '9') {
+                    expo = expo * 10 + (input1[i] - '0');
+                    i++;
+                }
+            } else {
+                coef = 1;
+                expo = 1;
+            }
+            coef *= coef_sign;
+        } else {
+            expo = 0;
+        }
+        
         ordered_insertItem(poly1, (elementType){coef, expo});
-        if(expo == 0) {
-            return 1;
+        
+        if(input1[i] == '\0') {
+            break;
         }
     }
-
-    poly2 = createList(10);
+    
+    poly2 = createList(MAX);
+    
+    printf("두 번째 다항식을 입력하세요 (예: 3x^2+4x+1) :\n");
+    char input2[MAX];
+    scanf("%s", input2);
+    i=0;
     while(1) {
-        scanf("%d %d", &coef, &expo);
+        int coef_sign = 1;
+        coef=0;
+        expo=0;
+        
+        if(input2[0]=='x') {
+            coef = 1;
+        }
+        if(input2[i]=='-') {
+            coef_sign = -1;
+            i++;
+        } else if(input2[i] == '+') {
+            i++;
+        }
+        if(input2[i] > '0' && input2[i] <= '9') {
+            coef = coef * 10 + (input2[i] - '0');
+            i++;
+        }
+        if(coef == 0) {
+            coef = 1;
+        }
+
+        coef *= coef_sign;
+        
+        if(input2[i] == 'x') {
+            i++;
+            
+            if(input2[i] == '^') {
+                i++;
+                if(input2[i] >= '0' && input2[i] <= '9') {
+                    expo = expo * 10 + (input2[i] - '0');
+                    i++;
+                }
+            } else {
+                expo = 1;
+            }
+        } else {
+            expo = 0;
+        }
+        
         ordered_insertItem(poly2, (elementType){coef, expo});
-        if(expo == 0) {
-            return 1;
+        
+        if(input2[i] == '\0') {
+            break;
         }
     }
-
+    
+    printList(poly1);
+    printList(poly2);
     poly3 = polymul(poly1, poly2);
+    printf("[곱셈 결과]\n");
     printList(poly3);
 
     destroyList(poly1);
     destroyList(poly2);
     destroyList(poly3);
+    
+    return 0;
 }
+
+
 //Linear List ADT
